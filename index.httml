@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,28 +30,22 @@
   <br><button onclick="login()">MASUK / DAFTAR</button>
   <p style="font-size:11px;margin-top:10px;color:#543847">*Akun kesimpen di HP ini aja</p>
 </div>
-
 <div id="score">0</div>
 <div id="playerName"></div>
 <button id="lbBtn" class="btn" onclick="showLeaderboard()" style="display:none">SKOR</button>
 <button id="logoutBtn" class="btn" onclick="logout()" style="display:none">GANTI</button>
 <button id="soundBtn" class="btn" onclick="toggleSound()" style="display:none">🔊 ON</button>
-
 <div id="leaderboard">
   <h3>TOP SKOR</h3>
   <div id="lbList"></div>
   <button class="btn" onclick="hideLeaderboard()">TUTUP</button>
 </div>
-
 <canvas id="canvas" width="400" height="600"></canvas>
-
 <script>
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 let gameStarted = false, gameOver = false, user = null, frame = 0, score = 0;
 let soundOn = localStorage.getItem('flappySound')!== 'false';
-
-// SUARA
 let audioCtx;
 function initAudio() { if (!audioCtx) audioCtx = new(window.AudioContext || window.webkitAudioContext)(); }
 function playSound(type) {
@@ -62,15 +57,11 @@ function playSound(type) {
   else if (type === 'hit') { osc.frequency.value = 150; osc.type = 'sawtooth'; gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3); osc.start(); osc.stop(audioCtx.currentTime + 0.3); }
 }
 function toggleSound() { soundOn =!soundOn; document.getElementById('soundBtn').innerText = soundOn? '🔊 ON' : '🔇 OFF'; localStorage.setItem('flappySound', soundOn); }
-
-// GAME
 function resizeCanvas() { let scale = Math.min(window.innerWidth / 400, window.innerHeight / 600); canvas.style.width = (400 * scale) + 'px'; canvas.style.height = (600 * scale) + 'px'; }
 window.addEventListener('resize', resizeCanvas); resizeCanvas();
-
 let clouds = [{x: 50, y: 100, s: 0.3}, {x: 200, y: 80, s: 0.4}, {x: 320, y: 120, s: 0.2}];
 let bird = {x: 80, y: 300, w: 34, h: 24, velocity: 0, gravity: 0.5, lift: -8, frame: 0, rotation: 0};
 let pipes = [], pipeGap = 150, pipeWidth = 52;
-
 function login() {
   const u = document.getElementById('username').value.trim(), p = document.getElementById('password').value.trim();
   if (!u ||!p) return alert('Nama dan password wajib diisi!');
@@ -107,4 +98,11 @@ function drawBackground() {
   ctx.fillStyle = '#FFD700'; ctx.beginPath(); ctx.arc(330, 80, 35, 0, Math.PI * 2); ctx.fill();
   ctx.strokeStyle = '#FFD700'; ctx.lineWidth = 3;
   for(let i = 0; i < 8; i++) { let angle = (i * Math.PI / 4); ctx.beginPath(); ctx.moveTo(330 + Math.cos(angle) * 40, 80 + Math.sin(angle) * 40); ctx.lineTo(330 + Math.cos(angle) * 50, 80 + Math.sin(angle) * 50); ctx.stroke(); }
-  ctx.fillStyle = 'rgba(255,255,255,
+  ctx.fillStyle = 'rgba(255,255,255,0.9)'; clouds.forEach(c => { ctx.beginPath(); ctx.arc(c.x, c.y, 22, 0, Math.PI * 2); ctx.arc(c.x+28, c.y, 28, 0, Math.PI * 2); ctx.arc(c.x+55, c.y, 22, 0, Math.PI * 2); ctx.fill(); c.x -= c.s; if (c.x < -80) c.x = 480; });
+  ctx.fillStyle = '#5aa600'; ctx.fillRect(0, 520, canvas.width, 80);
+  ctx.strokeStyle = '#4a8f00'; ctx.lineWidth = 2; for(let i = 0; i < canvas.width; i += 15) { ctx.beginPath(); ctx.moveTo(i, 520); ctx.lineTo(i + 5, 515); ctx.stroke(); }
+  ctx.fillStyle = '#8B4513'; ctx.fillRect(25, 440, 25, 80); ctx.fillStyle = '#228B22'; ctx.beginPath(); ctx.arc(37, 430, 45, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.arc(15, 445, 35, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.arc(60, 445, 35, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#8B4513'; ctx.fillRect(350, 440, 25, 80); ctx.fillStyle = '#228B22'; ctx.beginPath(); ctx.arc(362, 430, 45, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.arc(340, 445, 35, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.arc(385, 445, 35, 0, Math.PI * 2); ctx.fill();
+}
+function drawBird() {
+  ctx.save(); ctx.translate(bird.x, bird.y); bird.rotation = Math.min(Math.max(bird.velocity * 0.04
